@@ -2,10 +2,8 @@ package uk.ac.soton.ecs.db5n17.hybridimages;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.Gaussian2D;
@@ -78,8 +76,13 @@ public class MyHybridImages
 
         // Attempt 1: Jacob Rees-Hogg:
         // DisplayUtilities.display(makeHybrid(ImageUtilities.readMBF(new File("resources/warthog.bmp")), 0.2f, ImageUtilities.readMBF(new File("resources/jacob.bmp")), 3.0f));
-        // Attempt 2: Joe Bidet:
-        // Attempt 3: Lightsabers:
+        // Attempt 2: Stop the Count!:
+        MBFImage image = makeHybrid(ImageUtilities.readMBF(new File("resources/trump.bmp")), 2.0f, ImageUtilities.readMBF(new File("resources/count_count.bmp")), 1.25f);
+        DisplayUtilities.display(image);
+
+        ImageUtilities.write(image, new File("C://Users/Dan/Desktop/stop_the_count.jpeg"));
+        // Attempt 3: Joe Bidet:
+        // Attempt 4: Lightsabers:
         // Maybe more?
     }
 }

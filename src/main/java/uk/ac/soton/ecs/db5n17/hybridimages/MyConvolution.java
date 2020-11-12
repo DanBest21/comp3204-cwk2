@@ -28,20 +28,19 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage>
         {
             for (int j = 0; j < pixels[i].length; j++)
             {
-                float[][] snapshot = formSnapshot(i, j, image.pixels);
-                pixels[i][j] = calculateValue(snapshot);
+                pixels[i][j] = calculateValue(i, j, image.pixels);
             }
         }
 
         image.internalAssign(buffer);
     }
 
-    private float[][] formSnapshot(int x, int y, float[][] pixels)
+    private float calculateValue(int x, int y, float[][] pixels)
     {
-        float[][] snapshot = new float[kernel.length][kernel[0].length];
-
         int xOffset = x - (kernel.length / 2);
         int yOffset = y - (kernel[0].length / 2);
+
+        float accum = 0;
 
         for (int i = 0; i < kernel.length; i++)
         {
@@ -59,11 +58,11 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage>
                 if (yPos >= pixels[i].length)
                     yPos = yOffset - j;
 
-                snapshot[i][j] = pixels[xPos][yPos];
+                accum += kernel[kernel.length - i - 1][kernel[i].length - j - 1] * pixels[xPos][yPos];
             }
         }
 
-        return snapshot;
+        return accum;
     }
 
     private float calculateValue(float[][] snapshot)
