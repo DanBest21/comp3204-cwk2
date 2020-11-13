@@ -3,6 +3,8 @@ package uk.ac.soton.ecs.db5n17.hybridimages;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
+import java.lang.reflect.Array;
+
 public class MyConvolution implements SinglebandImageProcessor<Float, FImage>
 {
     private final float[][] kernel;
@@ -42,19 +44,19 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage>
     /**
      * Calculate the value for a given Cartesian position in the image
      *
-     * @param x
-     *          The horizontal position of the pixel in the image
      * @param y
      *          The vertical position of the pixel in the image
+     * @param x
+     *          The horizontal position of the pixel in the image
      * @param pixels
      *          The original image in the form of its pixels, represented by a two-dimensional array
      * @return The newly calculated value of the pixel matching the passed x and y co-ordinates
      */
-    private float calculateValue(int x, int y, float[][] pixels)
+    private float calculateValue(int y, int x, float[][] pixels)
     {
         // Offset the x and y positions by half of the kernel length and height dimensions respectively.
-        int xOffset = x - (kernel.length / 2);
-        int yOffset = y - (kernel[0].length / 2);
+        int yOffset = y - (kernel.length / 2);
+        int xOffset = x - (kernel[0].length / 2);
 
         float accum = 0;
 
@@ -64,22 +66,29 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage>
             for (int j = 0; j < kernel[i].length; j++)
             {
                 // Add the respective offset to determine which pixel we want to apply this specific kernel modifier to in the image.
-                int xPos = xOffset + i;
-                int yPos = yOffset + j;
+                int yPos = yOffset + i;
+                int xPos = xOffset + j;
 
                 // If the calculated position is negative or positive, use a mirroring technique to instead grab the equivalent
                 // pixel at the corresponding x and/or y position in the opposite direction from the central (x, y) pixel.
-                if (xPos < 0)
-                    xPos = Math.abs(xPos);
                 if (yPos < 0)
                     yPos = Math.abs(yPos);
-                if (xPos >= pixels.length)
-                    xPos = xOffset - i;
-                if (yPos >= pixels[i].length)
-                    yPos = yOffset - j;
+                if (xPos < 0)
+                    xPos = Math.abs(xPos);
+                if (yPos >= pixels.length)
+                    yPos = Math.abs(pixels.length - 1 - (yPos + 1 - pixels.length));
+                if (xPos >= pixels[0].length)
+                    xPos = Math.abs(pixels[0].length - 1 - (xPos + 1 - pixels[0].length));
 
                 // Add the value of the product of the kernel operator and appropriate pixel in the original image to an accumulator.
-                accum += kernel[kernel.length - i - 1][kernel[i].length - j - 1] * pixels[xPos][yPos];
+                try
+                {
+                    accum += kernel[kernel.length - i - 1][kernel[i].length - j - 1] * pixels[yPos][xPos];
+                }
+                catch (ArrayIndexOutOfBoundsException ex)
+                {
+                    ex.printStackTrace();
+                }
             }
         }
 
